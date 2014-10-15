@@ -11,10 +11,10 @@
     <Grid>
         <Frame x:Name="ControlMainFrame"
                Background="Transparent">
-            <Frame.Projection>
+            <!--<Frame.Projection>
                 <PlaneProjection GlobalOffsetZ="0"
                                  x:Name="MainFramePlaneProjection" />
-            </Frame.Projection>
+            </Frame.Projection>-->
             <Frame.ContentTransitions>
                 <TransitionCollection>
                     <EdgeUIThemeTransition x:Name="ControlMainFrameThemeTransition"
@@ -56,7 +56,7 @@
                                              EasingMode="EaseOut" />
                         </DoubleAnimation.EasingFunction>
                     </DoubleAnimation>
-                    <DoubleAnimation To="-100"
+                    <!--<DoubleAnimation To="-100"
                                      SpeedRatio="2"
                                      Storyboard.TargetName="MainFramePlaneProjection"
                                      Storyboard.TargetProperty="GlobalOffsetZ">
@@ -64,7 +64,7 @@
                             <ExponentialEase Exponent="3"
                                              EasingMode="EaseOut" />
                         </DoubleAnimation.EasingFunction>
-                    </DoubleAnimation>
+                    </DoubleAnimation>-->
                 </Storyboard>
                 <Storyboard x:Name="FadeOutProperty">
                     <DoubleAnimation x:Name="FadeOutSidebarGridAnimation"
@@ -76,7 +76,7 @@
                                              EasingMode="EaseIn" />
                         </DoubleAnimation.EasingFunction>
                     </DoubleAnimation>
-                    <DoubleAnimation To="0"
+                    <!--<DoubleAnimation To="0"
                                      SpeedRatio="2"
                                      Storyboard.TargetName="MainFramePlaneProjection"
                                      Storyboard.TargetProperty="GlobalOffsetZ">
@@ -84,7 +84,7 @@
                             <ExponentialEase Exponent="3"
                                              EasingMode="EaseOut" />
                         </DoubleAnimation.EasingFunction>
-                    </DoubleAnimation>
+                    </DoubleAnimation>-->
                 </Storyboard>
             </ContentPresenter.Resources>
         </ContentPresenter>

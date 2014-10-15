@@ -36,7 +36,14 @@ namespace PanelsView
             // 0.5 is sidebar at mid course
             get
             {
-                return (double)this.GetValue(ScrollingProperty);
+                try
+                {
+                    return (double)this.GetValue(ScrollingProperty);
+                }
+                catch
+                {
+                    return 1;
+                }
             }
             set
             {
@@ -114,7 +121,7 @@ namespace PanelsView
             if (e.Cumulative.Translation.X < 340)
             {
                 SideTransform.TranslateX += e.Delta.Translation.X;
-                MainFramePlaneProjection.GlobalOffsetZ -= e.Delta.Translation.X / 4;
+                //MainFramePlaneProjection.GlobalOffsetZ -= e.Delta.Translation.X / 4;
             }
             Scrolling = (SidebarGrid.ActualWidth + SideTransform.TranslateX) / SidebarGrid.ActualWidth;
         }
@@ -128,7 +135,7 @@ namespace PanelsView
         {
             if (e.Cumulative.Translation.X < 0)
             {
-                MainFramePlaneProjection.GlobalOffsetZ -= e.Delta.Translation.X / 4;
+                //MainFramePlaneProjection.GlobalOffsetZ -= e.Delta.Translation.X / 4;
                 SideTransform.TranslateX += e.Delta.Translation.X;
             }
             Scrolling = (SidebarGrid.ActualWidth + SideTransform.TranslateX) / SidebarGrid.ActualWidth;
