@@ -108,6 +108,7 @@ namespace PanelsView
                 HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
                 this.Loaded += OnLoaded;
             }
+            DisableTextBox();
         }
         protected override void OnApplyTemplate()
         {
