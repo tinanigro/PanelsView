@@ -1,4 +1,6 @@
-﻿using Windows.ApplicationModel;
+﻿using System.Collections.Generic;
+using System.Reflection;
+using Windows.ApplicationModel;
 using Windows.Phone.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -6,6 +8,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using System.Threading.Tasks;
+using VisualTreeHelper = PanelsView.Helpers.VisualTreeHelper;
 
 namespace PanelsView
 {
@@ -187,6 +190,7 @@ namespace PanelsView
             Scrolling = 1;
             _controlMainFrame.IsEnabled = false;
             IsSideBarVisible = true;
+            EnabledTextBox();
         }
 
         private void OnSideBarCollapsed()
@@ -201,8 +205,32 @@ namespace PanelsView
             Scrolling = 0;
             _controlMainFrame.IsEnabled = true;
             IsSideBarVisible = false;
+            DisableTextBox();
         }
 
+        /// <summary>
+        /// Enabled textboxes can make keybord appear even if textbox is out of the screen/not visible
+        /// Disabling them prevent this bug
+        /// </summary>
+        private void DisableTextBox()
+        {
+            List<TextBox> textBoxs = new List<TextBox>();
+            VisualTreeHelper.FindChildren(textBoxs, _sidebarGrid);
+            foreach (TextBox textBox in textBoxs)
+            {
+                textBox.IsEnabled = false;
+            }
+        }
+
+        private void EnabledTextBox()
+        {
+            List<TextBox> textBoxs = new List<TextBox>();
+            VisualTreeHelper.FindChildren(textBoxs, _sidebarGrid);
+            foreach (TextBox textBox in textBoxs)
+            {
+                textBox.IsEnabled = true;
+            }
+        }
         #region Manipulations Event Handlers
 
         private void RegisterManipulationEvents()
