@@ -5,10 +5,14 @@
 
     <!--<Style TargetType="local:">-->
     <Style TargetType="localControls:PanelsFrame">
+        <Setter Property="VelocityThreshold" Value="0.75"/>
+        <Setter Property="OpenRateThreshold" Value="0.25"/>
+        <Setter Property="CloseRateThreshold" Value="0.25"/>
+        <Setter Property="SideBareWidth" Value="340"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="localControls:PanelsFrame">
-                    <Grid>
+                    <Grid Background="{TemplateBinding Background}">
                         <Frame x:Name="ControlMainFrame"
                                Background="Transparent">
                             <!--<Frame.Projection>
@@ -29,13 +33,13 @@
                               Background="Transparent"
                               ManipulationMode="TranslateX" />
 
-                        <ContentPresenter Width="340"
+                        <ContentPresenter
                                           Grid.ColumnSpan="2"
                                           RenderTransformOrigin="0.5,0.5"
                                           x:Name="SidebarGrid"
-                                          ManipulationMode="TranslateX"
-                          
-                          HorizontalAlignment="Left">
+                                          ManipulationMode="TranslateX" 
+                                          Width="{TemplateBinding SideBareWidth}" 
+                                          HorizontalAlignment="Left">
                             <ContentPresenter.RenderTransform>
                                 <CompositeTransform TranslateX="0" x:Name="SideTransform" />
                             </ContentPresenter.RenderTransform>

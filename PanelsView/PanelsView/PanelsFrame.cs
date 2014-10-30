@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using Windows.ApplicationModel;
 using Windows.Phone.UI.Input;
 using Windows.UI.Xaml;
@@ -18,7 +17,7 @@ namespace PanelsView
     [TemplatePart(Name = FadeInPropertyName, Type = typeof(Storyboard))]
     [TemplatePart(Name = FadeOutPropertyName, Type = typeof(Storyboard))]
     [TemplatePart(Name = ControlMainFrameName, Type = typeof(Frame))]
-    [TemplatePart(Name = EdgeGridName, Type = typeof(Grid))]
+    [TemplatePart(Name = EdgeGridName, Type = typeof(UIElement))]
     [TemplatePart(Name = ControlMainFrameThemeTransitionName, Type = typeof(EdgeUIThemeTransition))]
     public sealed class PanelsFrame : Control
     {
@@ -37,11 +36,12 @@ namespace PanelsView
         private Storyboard _fadeInProperty;
         private Storyboard _fadeOutProperty;
         private Frame _controlMainFrame;
-        private Grid _edgeGrid;
+        private UIElement _edgeGrid;
         private EdgeUIThemeTransition _controlMainFrameThemeTransition;
 
         public bool IsSideBarVisible { get; private set; }
 
+        #region Scrolling Property
         /// <summary>
         /// 0 is sidebar visible
         /// 1 is sidebar collapsed
@@ -63,22 +63,19 @@ namespace PanelsView
             set { SetValue(ScrollingProperty, value); }
         }
 
-        internal static readonly DependencyProperty ScrollingProperty = DependencyProperty.Register(
-            "Scrolling", typeof(double), typeof(PanelsFrame), new PropertyMetadata(default(double), ScrollingPropertyChangedCallback));
+        public static readonly DependencyProperty ScrollingProperty = DependencyProperty.Register(
+            "Scrolling", typeof(double), typeof(PanelsFrame), new PropertyMetadata(default(double))); 
+        #endregion
 
-        private static void ScrollingPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        #region SideBarContent Property
+        public DependencyObject SideBarContent
         {
-
-        }
-
-        public object SideBarContent
-        {
-            get { return (object)GetValue(SideBarContentProperty); }
+            get { return (DependencyObject)GetValue(SideBarContentProperty); }
             set { SetValue(SideBarContentProperty, value); }
         }
 
-        internal static readonly DependencyProperty SideBarContentProperty = DependencyProperty.Register(
-            "SideBarContent", typeof(object), typeof(PanelsFrame), new PropertyMetadata(default(object), SideBarContentPropertyChangedCallback));
+        public static readonly DependencyProperty SideBarContentProperty = DependencyProperty.Register(
+            "SideBarContent", typeof(DependencyObject), typeof(PanelsFrame), new PropertyMetadata(default(DependencyObject), SideBarContentPropertyChangedCallback)); 
 
         private static void SideBarContentPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
@@ -88,6 +85,72 @@ namespace PanelsView
                 that._sidebarGrid.Content = dependencyPropertyChangedEventArgs.NewValue;
             }
         }
+        #endregion
+
+        #region VelocityThreshold Property
+        public double VelocityThreshold
+        {
+            get { return (double)GetValue(VelocityThresholdProperty); }
+            set { SetValue(VelocityThresholdProperty, value); }
+        }
+
+        public static readonly DependencyProperty VelocityThresholdProperty = DependencyProperty.Register(
+            "VelocityThreshold", typeof(double), typeof(PanelsFrame), new PropertyMetadata(default(double)));
+
+        #endregion
+
+        #region OpenRateThreshold Property
+        public double OpenRateThreshold
+        {
+            get { return (double)GetValue(OpenRateThresholdProperty); }
+            set { SetValue(OpenRateThresholdProperty, value); }
+        }
+
+        private double OpenThreshold
+        {
+            get { return _sidebarGrid.ActualWidth * (OpenRateThreshold - 1d); }
+        }
+
+        public static readonly DependencyProperty OpenRateThresholdProperty = DependencyProperty.Register(
+            "OpenRateThreshold", typeof(double), typeof(PanelsFrame), new PropertyMetadata(default(double)));
+
+        #endregion
+
+        #region CloseRateThreshold Property
+
+        public double CloseRateThreshold
+        {
+            get { return (double) GetValue(CloseRateThresholdProperty); }
+            set { SetValue(CloseRateThresholdProperty, value); }
+        }
+
+        private double CloseThreshold
+        {
+            get
+            {
+
+                return _sidebarGrid.ActualWidth*(-CloseRateThreshold);
+            }
+        }
+
+        public static readonly DependencyProperty CloseRateThresholdProperty = DependencyProperty.Register(
+            "CloseRateThreshold", typeof (double), typeof (PanelsFrame), new PropertyMetadata(default(double)));
+
+        #endregion
+
+
+        #region SideBareWidth Property
+
+        public double SideBareWidth
+        {
+            get { return (double)GetValue(SideBareWidthProperty); }
+            set { SetValue(SideBareWidthProperty, value); }
+        }
+
+        public static readonly DependencyProperty SideBareWidthProperty = DependencyProperty.Register(
+            "SideBareWidth", typeof(double), typeof(PanelsFrame), new PropertyMetadata(default(double)));
+
+        #endregion
 
         public Frame MainFrame
         {
@@ -111,7 +174,10 @@ namespace PanelsView
         }
         protected override void OnApplyTemplate()
         {
+            UnregisterManipulationEvents();
+
             base.OnApplyTemplate();
+
             _sideTransform = GetTemplateChild(SideTransformName) as CompositeTransform;
             _sidebarGrid = GetTemplateChild(SidebarGridName) as ContentPresenter;
             _fadeOutSidebarGridAnimation = GetTemplateChild(FadeOutSidebarGridAnimationName) as DoubleAnimation;
@@ -251,9 +317,26 @@ namespace PanelsView
             }
         }
 
+        private void UnregisterManipulationEvents()
+        {
+            if (_edgeGrid != null)
+            {
+                _edgeGrid.ManipulationStarted -= EdgeGrid_OnManipulationStarted;
+                _edgeGrid.ManipulationDelta -= EdgeGrid_OnManipulationDelta;
+                _edgeGrid.ManipulationCompleted -= EdgeGrid_OnManipulationCompleted;
+            }
+
+            if (_sidebarGrid != null)
+            {
+                _sidebarGrid.ManipulationStarted -= Sidebar_OnManipulationStarted;
+                _sidebarGrid.ManipulationDelta -= Sidebar_OnManipulationDelta;
+                _sidebarGrid.ManipulationCompleted -= Sidebar_OnManipulationCompleted;
+            }
+        }
+
         private void EdgeGrid_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            if (_sideTransform.TranslateX > -240)
+            if (_sideTransform.TranslateX > OpenThreshold || e.Velocities.Linear.X > VelocityThreshold)
             {
                 OnSideBarVisible();
             }
@@ -295,7 +378,7 @@ namespace PanelsView
 
         private void Sidebar_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            if (_sideTransform.TranslateX < -50)
+            if (_sideTransform.TranslateX < CloseThreshold || e.Velocities.Linear.X < -VelocityThreshold)
             {
                 OnSideBarCollapsed();
             }
