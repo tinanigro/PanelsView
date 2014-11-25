@@ -193,7 +193,7 @@ namespace PanelsView
             }
 
             RegisterManipulationEvents();
-            DisableTextBox();
+            _sidebarGrid.Loaded += (sender, args) => DisableTextBox();
         }
 
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
