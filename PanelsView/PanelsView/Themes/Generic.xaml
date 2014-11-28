@@ -21,8 +21,7 @@
                             </Frame.Projection>-->
                             <Frame.ContentTransitions>
                                 <TransitionCollection>
-                                    <EdgeUIThemeTransition x:Name="ControlMainFrameThemeTransition"
-                                           Edge="Bottom" />
+					<NavigationThemeTransition x:Name="ControlMainFrameThemeTransition"/>
                                 </TransitionCollection>
                             </Frame.ContentTransitions>
                         </Frame>
